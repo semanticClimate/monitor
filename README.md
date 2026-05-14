@@ -20,7 +20,7 @@ Live uptime monitoring and status page for semanticClimate services, powered by 
 1. **`GH_PAT` secret** – Create a [Personal Access Token](https://github.com/settings/tokens) with `repo` and `workflow` scopes, then add it as a repository secret named `GH_PAT` in *Settings → Secrets and variables → Actions*.
 
 2. **Email notification secrets** – Upptime uses SMTP to send email alerts. Add the following repository secrets:
-   - `NOTIFICATION_EMAIL` – recipient address (already set to `simon.worthington@tib.eu` in `.upptimerc.yml`)
+   - `NOTIFICATION_EMAIL` – recipient address (already set to `simon.worthington@posteo.net` in `.upptimerc.yml`)
    - `SMTP_HOST` – your SMTP server hostname
    - `SMTP_PORT` – SMTP port (e.g. `587`)
    - `SMTP_USERNAME` – SMTP login username
