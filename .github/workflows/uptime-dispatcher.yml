@@ -1,0 +1,23 @@
+name: Uptime Dispatcher
+on:
+  schedule:
+    - cron: "1,6,11,16,21,26,31,36,41,46,51,56 * * * *"
+  workflow_dispatch:
+
+jobs:
+  dispatch-uptime:
+    name: Dispatch Uptime CI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Uptime CI workflow
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'uptime.yml',
+              ref: 'main'
+            });
+            console.log('Uptime CI workflow triggered');
