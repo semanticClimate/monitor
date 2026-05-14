@@ -1,0 +1,20 @@
+[
+  {
+    "name": "ClimateKG Dev",
+    "url": "https://dev-climatekg.semanticclimate.org/",
+    "icon": "https://icons.duckduckgo.com/ip3/dev-climatekg.semanticclimate.org.ico",
+    "slug": "climate-kg-dev",
+    "status": "up",
+    "uptime": "100.00%",
+    "uptimeDay": "100.00%",
+    "uptimeWeek": "100.00%",
+    "uptimeMonth": "100.00%",
+    "uptimeYear": "100.00%",
+    "time": 1350,
+    "timeDay": 1350,
+    "timeWeek": 1350,
+    "timeMonth": 1350,
+    "timeYear": 1350,
+    "dailyMinutesDown": {}
+  }
+]
