@@ -78,6 +78,7 @@ def check_ssl(hostname: str, port: int = 443) -> dict:
     }
     try:
         ctx = ssl.create_default_context()
+        ctx.minimum_version = ssl.TLSVersion.TLSv1_2
         with ctx.wrap_socket(
             socket.create_connection((hostname, port), timeout=10),
             server_hostname=hostname,
@@ -97,7 +98,7 @@ def check_ssl(hostname: str, port: int = 443) -> dict:
             result["days_until_expiry"] = (
                 expiry - datetime.now(timezone.utc)
             ).days
-    except Exception as exc:  # noqa: BLE001
+    except (ssl.SSLError, socket.timeout, OSError) as exc:
         result["error"] = str(exc)
     return result
 
