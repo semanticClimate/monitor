@@ -1,0 +1,142 @@
+name: Collect Diagnostic Logs
+
+# Runs automatically when Upptime opens an outage issue, and can also be
+# triggered manually from the Actions tab (optionally scoped to one URL).
+#
+# On completion the JSON diagnostic report is uploaded as a workflow artifact
+# (retained for 30 days) and, for issue-triggered runs, a summary comment is
+# posted to the issue so the team can see DNS/SSL/HTTP findings without
+# leaving GitHub.
+
+on:
+  # Manual trigger — optionally restrict to a single URL.
+  workflow_dispatch:
+    inputs:
+      target_url:
+        description: "Specific URL to diagnose (leave blank for all sites)"
+        required: false
+        default: ""
+
+  # Automatic trigger — Upptime opens an issue when a site goes down.
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  collect-logs:
+    name: Run diagnostics
+    runs-on: ubuntu-latest
+
+    # For issue events, only proceed when the title looks like an Upptime
+    # outage alert (e.g. "⬇️ ClimateKG Dev is down").
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issues' &&
+       contains(github.event.issue.title, 'is down'))
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT || github.token }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run diagnostics
+        id: run_diagnostics
+        env:
+          TARGET_URL: ${{ inputs.target_url || '' }}
+          LOG_DIR: logs
+        # continue-on-error so the artifact upload and issue comment always run.
+        run: python collect_logs.py
+        continue-on-error: true
+
+      - name: Upload diagnostic logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-logs-${{ github.run_id }}
+          path: logs/
+          retention-days: 30
+
+      # Post a human-readable summary to the outage issue.
+      - name: Comment on outage issue
+        if: github.event_name == 'issues'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GH_PAT || github.token }}
+          script: |
+            const fs   = require('fs');
+            const path = require('path');
+            const logsDir = 'logs';
+
+            let body = '## 🔍 Diagnostic Report\n\n';
+
+            const files = fs.existsSync(logsDir)
+              ? fs.readdirSync(logsDir).filter(f => f.endsWith('.json')).sort()
+              : [];
+
+            if (files.length === 0) {
+              body += '_No diagnostic data was collected — check the [workflow run]'
+                    + `(https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details._\n`;
+            } else {
+              const latest = files.at(-1);
+              const report = JSON.parse(
+                fs.readFileSync(path.join(logsDir, latest), 'utf8')
+              );
+              body += `**Generated at:** ${report.generated_at}\n\n`;
+
+              for (const site of report.sites) {
+                body += `### ${site.name}\n`;
+                body += `| Check | Result |\n|-------|--------|\n`;
+
+                // HTTP
+                const httpOk = site.http.reachable;
+                const httpDetail = site.http.status_code
+                  ? `HTTP ${site.http.status_code}`
+                  : (site.http.error || 'N/A');
+                const rtMs = site.http.response_time_ms
+                  ? ` — ${site.http.response_time_ms} ms`
+                  : '';
+                body += `| HTTP | ${httpOk ? '✅' : '❌'} ${httpDetail}${rtMs} |\n`;
+
+                // DNS
+                const dnsOk = site.dns.resolved;
+                const dnsDetail = dnsOk
+                  ? site.dns.addresses.join(', ')
+                  : (site.dns.error || 'unresolved');
+                body += `| DNS | ${dnsOk ? '✅' : '❌'} ${dnsDetail} |\n`;
+
+                // SSL
+                if (site.ssl) {
+                  const sslOk = site.ssl.valid;
+                  let sslDetail = sslOk ? 'valid' : (site.ssl.error || 'invalid');
+                  if (site.ssl.days_until_expiry !== null) {
+                    const d = site.ssl.days_until_expiry;
+                    sslDetail += ` — expires in ${d} day${d === 1 ? '' : 's'}`;
+                    if (d < 30) sslDetail += ' ⚠️';
+                  }
+                  body += `| SSL | ${sslOk ? '✅' : '❌'} ${sslDetail} |\n`;
+                }
+
+                body += '\n';
+              }
+            }
+
+            body += `\n> Full JSON logs: [workflow artifact](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}).`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
