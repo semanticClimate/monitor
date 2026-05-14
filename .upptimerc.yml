@@ -1,0 +1,21 @@
+owner: semanticClimate
+repo: monitor
+
+sites:
+  - name: ClimateKG Dev
+    url: https://dev-climatekg.semanticclimate.org/
+
+status-website:
+  baseUrl: /monitor
+  name: semanticClimate Monitor
+  introTitle: "semanticClimate Service Status"
+  introMessage: Live uptime monitoring for semanticClimate services, powered by [Upptime](https://upptime.js.org).
+  navbar:
+    - title: Status
+      href: /
+    - title: GitHub
+      href: https://github.com/semanticClimate/monitor
+
+notifications:
+  - type: email
+    to: simon.worthington@tib.eu
