@@ -1,0 +1,32 @@
+# Configuration for semanticClimate Uptime Monitor
+# Last modified to reset workflow schedule: 2026-05-14
+owner: semanticClimate
+repo: monitor
+assignees:
+  - semanticClimate
+commitMessages:
+  readmeContent: ":pencil: Update summary in README [skip ci]"
+  statusChange: ":arrow_up: Update status of $SITE_NAME"
+  graphsUpdate: ":card_file_box: Update status summary [skip ci]"
+  commitMessage: "[Automated] Update Upptime"
+performanceMetrics: true
+status-page-theme: light
+
+sites:
+  - name: ClimateKG Dev
+    url: https://dev-climatekg.semanticclimate.org/
+
+status-website:
+  baseUrl: /monitor
+  name: semanticClimate Monitor
+  introTitle: "semanticClimate Service Status"
+  introMessage: Live uptime monitoring for semanticClimate services, powered by [Upptime](https://upptime.js.org).
+  navbar:
+    - title: Status
+      href: /
+    - title: GitHub
+      href: https://github.com/semanticClimate/monitor
+
+notifications:
+  - type: email
+    to: simon.worthington@posteo.net
