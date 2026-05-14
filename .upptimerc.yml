@@ -1,5 +1,5 @@
 # Configuration for semanticClimate Uptime Monitor
-# Last modified to reset workflow schedule: 2026-05-14
+# Last modified to reset workflow schedule: 2026-05-14 (attempt 2)
 owner: semanticClimate
 repo: monitor
 assignees:
