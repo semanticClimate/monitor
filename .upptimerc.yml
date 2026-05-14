@@ -1,5 +1,10 @@
 owner: semanticClimate
 repo: monitor
+commitMessages:
+  readmeContent: ":pencil: Update summary in README [skip ci]"
+  statusChange: ":arrow_up: Update status of $SITE_NAME"
+  graphsUpdate: ":card_file_box: Update status summary [skip ci]"
+  commitMessage: "[Automated] Update Upptime"
 
 sites:
   - name: ClimateKG Dev
