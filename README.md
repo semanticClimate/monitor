@@ -25,7 +25,7 @@ Whenever Upptime opens an issue titled `… is down`, the **Collect Diagnostic L
 ### Manual (on demand)
 
 1. Go to **Actions → Collect Diagnostic Logs → Run workflow**.
-2. Optionally enter a specific URL in the *Specific URL to diagnose* field; leave blank to check all configured sites.
+2. Optionally enter a specific URL in the _Specific URL to diagnose_ field; leave blank to check all configured sites.
 3. Download the `diagnostic-logs-<run-id>` artifact from the completed run for the full JSON report.
 
 ### Running locally
@@ -45,13 +45,13 @@ The JSON report is written to `logs/diagnostic-<timestamp>.json` and contains pe
 
 2. **Email notification secrets** – Upptime uses SMTP to send email alerts. Add the following repository secrets:
 
-   | Secret | Description |
-   |---|---|
+   | Secret               | Description                                 |
+   | -------------------- | ------------------------------------------- |
    | `NOTIFICATION_EMAIL` | Recipient address (set in `.upptimerc.yml`) |
-   | `SMTP_HOST` | SMTP server hostname |
-   | `SMTP_PORT` | SMTP port (e.g. `587`) |
-   | `SMTP_USERNAME` | SMTP login username |
-   | `SMTP_PASSWORD` | SMTP login password |
+   | `SMTP_HOST`          | SMTP server hostname                        |
+   | `SMTP_PORT`          | SMTP port (e.g. `587`)                      |
+   | `SMTP_USERNAME`      | SMTP login username                         |
+   | `SMTP_PASSWORD`      | SMTP login password                         |
 
 3. **GitHub Pages** – In _Settings → Pages_, set the source to the `gh-pages` branch, root directory. The status page will be published at `https://semanticclimate.github.io/monitor/`.
 
